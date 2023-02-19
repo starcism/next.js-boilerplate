@@ -2,6 +2,10 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverComponentsExternalPackages: ['twin.macro'],
+  },
+  compiler: {
+      styledComponents: true,
   },
 }
 
