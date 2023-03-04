@@ -13,6 +13,8 @@ import Modal from '@/components/Modal'
 import { IProduct } from '@/types/types'
 import getProductInfo from '@/libs/getAxios'
 import ChangeAdress from '@/components/ChangeAdress'
+import buy_npay from '@/utils/buy_npay.png'
+import buy_kakaopay from '@/utils/buy_kakaopay.png'
 
 export default function Page() {
   const { register } = useForm()
@@ -20,6 +22,9 @@ export default function Page() {
   const [isShippingOptionsModal, setIsShippingOptionsModal] = useState(false)
   const [productInfo, setProductInfo] = useState<null | IProduct>(null)
   const [shippingOption, setShippingOption] = useState<string>()
+  const [payOption, setPayOption] = useState<string>()
+  const [paymentDisabled, setPaymentDisabled] = useState<boolean>(false)
+
   useEffect(() => {
     getProductInfo().then((data) => setProductInfo(data))
   }, [])
@@ -37,7 +42,7 @@ export default function Page() {
       <div css={tw`[margin: 0 auto] [padding: 20px 40px 160px] [max-width: 780px]`}>
         {/* 컨테이너 */}
         {/* --- 상품 정보 --- */}
-        <div css={tw`w-full [padding: 32px] [border: 8px solid #fafafa] bg-white `}>
+        <div css={tw`w-full [padding: 32px] [border-top: 8px solid #fafafa] bg-white `}>
           <div css={tw`flex bg-white items-center`}>
             <div css={tw`[background-color: rgb(246, 238, 237)] pt-0 w-20 h-20 shrink-0 [border-radius: 10px] overflow-hidden relative`}>
               <Image alt="" src={imagesrc} css={tw`w-full h-auto`} />
@@ -77,7 +82,7 @@ export default function Page() {
         </div>
         {/* --- 상품 정보 --- */}
         {/* --- 배송 주소 섹션 --- */}
-        <section css={tw`w-full [padding: 32px] [border: 8px solid #fafafa] bg-white`}>
+        <section css={tw`w-full [padding: 32px] [border-top: 8px solid #fafafa] bg-white`}>
           <div>
             <div css={tw`flex items-center pb-3`}>
               <h3 css={tw`[line-height: 22px] [font-size: 18px] [font-weight: 700] [letter-spacing: -.15px]`}>배송 주소</h3>
@@ -155,27 +160,95 @@ export default function Page() {
           {/* --- 요청 사항 --- */}
         </section>
         {/* --- 배송 주소 섹션 --- */}
-        <form className="flex flex-col">
-          <div className="flex items-center justify-center">
-            <input
-              className="text-center border-2 my-2 text-gray-600 border-gray-500 hover:border-blue-500 hover:text-gray-800 shadow-sm rounded-lg w-40 h-8 bg-white"
-              type="text"
-              value="가격"
-            ></input>
+        {/* --- 결제 섹션 --- */}
+        <section css={tw`w-full [padding: 32px] [border-top: 8px solid #fafafa] bg-white`}>
+          <div>
+            <h3 css={tw`[line-height: 22px] [font-size: 18px] [font-weight: 700] [letter-spacing: -.15px]`}>결제 방법</h3>
           </div>
-          <div className="flex items-center justify-end">
-            <input
-              className="flex border-2 items-center justify-center h-8 w-8 my-2 ml-2 text-gray-600 border-gray-500 hover:border-blue-500 hover:text-gray-800 shadow-sm rounded-lg bg-white"
-              type="button"
-              value="+"
-            ></input>
-            <input
-              className="flex border-2 items-center justify-center h-8 w-8 my-2 ml-2 text-gray-600 border-gray-500 hover:border-blue-500 hover:text-gray-800 shadow-sm rounded-lg bg-white"
-              type="button"
-              value="-"
-            ></input>
+          <div css={tw`pt-[7px]`}>
+            <h4 css={tw`flex items-center [padding: 16px 0 13px]`}>
+              <div css={tw`[font-size: 15px] [letter-spacing: -.15px] [font-weight: 400]`}>
+                <strong css={tw`[font-weight: 600]`}>일반 결제</strong>
+                <span css={tw`pl-[5px] [font-size: 12px] [letter-spacing: -.06px] [font-weight: 350] [color: rgba(34,34,34,.5)]`}>일시불・할부</span>
+              </div>
+            </h4>
           </div>
-        </form>
+          <div css={tw`flex [flex-flow: row wrap] [grid-gap: 6px] [gap: 6px]`}>
+            <div onClick={() => setPayOption('creditcard')} css={tw`flex [flex-basis: calc(33.3333% - 4px)] flex-col cursor-pointer`}>
+              <div
+                css={[
+                  tw`flex [border-radius: 10px] [border: 1px solid #ebebeb] items-center h-[60px] [padding: 7px 7px 8px 11px]`,
+                  payOption === 'creditcard' && tw`[border: 1px solid #222]`,
+                ]}
+              >
+                <div css={tw`pr-[8px]`}>
+                  <p css={[tw`[font-size: 14px] [letter-spacing: -.21px]`, payOption === 'creditcard' && tw`[font-weight: 700]`]}>신용카드</p>
+                </div>
+              </div>
+            </div>
+            <div onClick={() => setPayOption('naverpay')} css={tw`flex [flex-basis: calc(33.3333% - 4px)] flex-col cursor-pointer`}>
+              <div
+                css={[
+                  tw`flex [border-radius: 10px] [border: 1px solid #ebebeb] items-center h-[60px] [padding: 7px 7px 8px 11px]`,
+                  payOption === 'naverpay' && tw`[border: 1px solid #222]`,
+                ]}
+              >
+                <div css={tw`pr-[8px]`}>
+                  <p css={[tw`[font-size: 14px] [letter-spacing: -.21px]`, payOption === 'naverpay' && tw`[font-weight: 700]`]}>네이버페이</p>
+                </div>
+                <Image alt="네이버페이" src={buy_npay} width={40} height={40} css={tw`ml-auto border-0 cursor-pointer`} />
+              </div>
+            </div>
+            <div onClick={() => setPayOption('kakaopay')} css={tw`flex [flex-basis: calc(33.3333% - 4px)] flex-col cursor-pointer`}>
+              <div
+                css={[
+                  tw`flex [border-radius: 10px] [border: 1px solid #ebebeb] items-center h-[60px] [padding: 7px 7px 8px 11px]`,
+                  payOption === 'kakaopay' && tw`[border: 1px solid #222]`,
+                ]}
+              >
+                <div css={tw`pr-[8px]`}>
+                  <p css={[tw`[font-size: 14px] [letter-spacing: -.21px]`, payOption === 'kakaopay' && tw`[font-weight: 700]`]}>카카오페이</p>
+                </div>
+                <Image alt="카카오페이" src={buy_kakaopay} width={40} height={40} css={tw`ml-auto border-0 cursor-pointer`} />
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* --- 결제 섹션 --- */}
+        <section css={tw`w-full [padding: 32px] [border-top: 8px solid #fafafa] bg-white`}>
+          <div>
+            <ul css={tw`pt-[32px] pl-[32px] pr-[32px] pb-[16px] [list-style: none]`}>
+              <li css={tw`[border-top: 1px solid #ebebeb] [font-weight: 700] [padding: 19px 0 20px]`}>
+                <Link href="/payment" css={tw`flex items-center [text-decoration: none] `}>
+                  <div css={tw`mr-[20px] [word-break: break-all] [word-wrap: break-word]`}>
+                    <p css={tw`[line-height: 18px] [font-size: 15px]`}>구매 조건을 모두 확인하였으며, 거래 진행에 동의합니다.</p>
+                  </div>
+                  <div onClick={() => setPaymentDisabled(!paymentDisabled)} css={tw`ml-auto relative`}>ㅇ</div>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div css={tw`[padding: 0 32px 32px]`}>
+            <div css={tw`pt-[16px] pb-[12px]`}>
+              <dl css={tw`flex justify-between items-center`}>
+                <dt css={tw`[line-height: 18px] [font-size: 15px] [font-weight: 700]`}>총 결제금액</dt>
+                <dd css={tw`flex items-center [color: #f15746]`}>
+                  <span css={tw`[line-height: 26px] [font-style: italic] [font-size: 20px] [font-weight: 500] [letter-spacing: normal]`}>1,000,000</span>
+                  <span css={tw`[line-height: 26px] [font-size: 20px] [font-weight: 600] [word-spacing: -.15px]`}>원</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <Link
+                href={`${payOption}`}
+                css={[
+                  tw`inline-flex items-center [vertical-align: middle] justify-center [font-weight: 600] h-[52px] w-full [font-size: 16px] [letter-spacing: -.16px] [border-radius: 12px] [color: white] [background-color: #ebebeb] cursor-default`, paymentDisabled && tw`[background-color: #ef6253] cursor-pointer`]}
+              >
+                결제하기
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   )
