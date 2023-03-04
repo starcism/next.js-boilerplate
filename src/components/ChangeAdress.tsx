@@ -9,9 +9,10 @@ interface IProps {
 
 const ChangeAdress = ({ close }: IProps) => {
   return (
-    <div css={tw`flex bg-white`}>
-      <div css={tw`flex`}>
+    <div css={tw`flex flex-col bg-white`}>
+      <div>
         <h1>주소변경창</h1>
+        <div><h1>1</h1></div>
       </div>
     </div>
   )
